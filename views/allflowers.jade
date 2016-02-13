@@ -2,13 +2,13 @@ html
   head
     title Flowers
   body
-    h1 #{color} Flowers
+    h1 #{currentColor} Flowers
 
-    
+
     form(action="showColors", method="get")
-      select(name='flowerColor')
-        each col in flowerColors
-          option(value='#{col}') #{col}
+      select(name='colorDropDown')
+        each color in flowerColors
+          option(value='#{color}') #{color}
       input(type="submit" name="colorButton" value="Choose color")
 
 

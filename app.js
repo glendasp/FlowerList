@@ -17,8 +17,6 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
   //routes - only one, to the root /
   app.get('/', function(req, res){
 
-
-
     db.collection('flowers').find({}).toArray(function(err, flowerdocs){
 
       var colordocs = db.collection('flowers').distinct("color", function(err, colordocs){
@@ -28,20 +26,28 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
         res.render('allflowers', {'flowers' : flowerdocs, "flowerColors":colordocs});
 
       })
-        
+
 
     });
   });
 
   //Form-handling route - show only flowers of selected color
   app.get("/showColors", function(req, res){
-    var color = req.query.flowerColor;
+    console.log(req.query)
+    var color = req.query.colorDropDown;
     db.collection('flowers').find({"color":color}).toArray(function(err, docs){
       //Turn "red" into "Red"
       var displayColor = color.slice(0,1).toUpperCase() + color.slice(1, color.length)
-      res.render('allflowers', {'flowers' : docs, "color":displayColor});
+
+      var colordocs = db.collection('flowers').distinct("color", function(err, colordocs){
+
+        res.render('allflowers', {'flowers' : docs, "currentColor": displayColor, "flowerColors":colordocs});
+    });
     });
   });
+
+
+
 
   //All other requests, return 404 not found
   app.use(function(req, res){
