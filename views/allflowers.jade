@@ -2,8 +2,16 @@ html
   head
     title Flowers
   body
-    h1 Flowers
+    h1 #{currentColor} Flowers
+
+    form(action="showColors", method="get")
+      select(name='colorDropDown')
+        each color in flowerColors
+          option(value='#{color}') #{color}
+      input(type="submit" name="colorButton" value="Choose color")
 
     ul
-      for flower in flowers
+      each flower in flowers
         li #{flower.name} is #{flower.color}
+
+    a(href="/") Flowers Home Page
