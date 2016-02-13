@@ -8,31 +8,50 @@ app = express();
 app.set("view engine", "jade");
 app.set("views", __dirname + "/views");
 
+
+//Attempt to connect to MongoDB.
 MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
-
   assert.equal(null, err);  //This will crash the app if there is an error.
-
   console.log("Connected to MongoDB");
 
   //routes - only one, to the root /
   app.get('/', function(req, res){
 
-    db.collection('flowers').find({}).toArray(function(err, docs){
-      res.render('allflowers', {'flowers' : docs})
-    });
-  })
 
+
+    db.collection('flowers').find({}).toArray(function(err, flowerdocs){
+
+      var colordocs = db.collection('flowers').distinct("color", function(err, colordocs){
+
+        console.log(flowerdocs);
+        console.log(colordocs);
+        res.render('allflowers', {'flowers' : flowerdocs, "flowerColors":colordocs});
+
+      })
+        
+
+    });
+  });
+
+  //Form-handling route - show only flowers of selected color
+  app.get("/showColors", function(req, res){
+    var color = req.query.flowerColor;
+    db.collection('flowers').find({"color":color}).toArray(function(err, docs){
+      //Turn "red" into "Red"
+      var displayColor = color.slice(0,1).toUpperCase() + color.slice(1, color.length)
+      res.render('allflowers', {'flowers' : docs, "color":displayColor});
+    });
+  });
 
   //All other requests, return 404 not found
   app.use(function(req, res){
     res.sendStatus(404);
   });
 
-  //start server
+  //And start the server
   var server = app.listen(3050, function(){
     var port = server.address().port;
     console.log("Server listening on port "+ port);
   });
-
 
 });
