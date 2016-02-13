@@ -16,14 +16,10 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
 
   //routes - only one, to the root /
   app.get('/', function(req, res){
-
-    db.collection('flowers').find({}).toArray(function(err, flowerdocs){
+    db.collection('flowers').find({}, {"name": true, "color": true}).toArray(function(err, flowerdocs){
       var colordocs = db.collection('flowers').distinct("color", function(err, colordocs){
         res.render('allflowers', {'flowers' : flowerdocs, "flowerColors":colordocs});
-
       })
-
-
     });
   });
 
@@ -39,8 +35,6 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
     });
     });
   });
-
-
 
 
   //All other requests, return 404 not found
