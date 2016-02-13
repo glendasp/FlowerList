@@ -8,6 +8,7 @@ app = express();
 app.set("view engine", "jade");
 app.set("views", __dirname + "/views");
 
+app.use(express.static("public"));
 
 //Attempt to connect to MongoDB.
 MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
@@ -36,6 +37,16 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
     });
   });
 
+  app.get("/details/:flower", function(req, res){
+
+    var flowerName = req.params.flower
+
+    //DB query for this flower.
+    db.collection("flowers").findOne({"name": flowerName}, function(err, doc){
+      console.log(doc);
+      res.render("flowerDetails", doc)
+    })
+  });
 
   //All other requests, return 404 not found
   app.use(function(req, res){
