@@ -18,11 +18,7 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
   app.get('/', function(req, res){
 
     db.collection('flowers').find({}).toArray(function(err, flowerdocs){
-
       var colordocs = db.collection('flowers').distinct("color", function(err, colordocs){
-
-        console.log(flowerdocs);
-        console.log(colordocs);
         res.render('allflowers', {'flowers' : flowerdocs, "flowerColors":colordocs});
 
       })
@@ -33,14 +29,12 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
 
   //Form-handling route - show only flowers of selected color
   app.get("/showColors", function(req, res){
-    console.log(req.query)
     var color = req.query.colorDropDown;
-    db.collection('flowers').find({"color":color}).toArray(function(err, docs){
-      //Turn "red" into "Red"
-      var displayColor = color.slice(0,1).toUpperCase() + color.slice(1, color.length)
-
+    //Get all of the flowers of the desired color. Only return name and color.
+    db.collection('flowers').find({"color": color}, {"name": true, "color": true}).toArray(function(err, docs){
       var colordocs = db.collection('flowers').distinct("color", function(err, colordocs){
-
+        //Turn "red" into "Red"
+        var displayColor = color.slice(0,1).toUpperCase() + color.slice(1, color.length)
         res.render('allflowers', {'flowers' : docs, "currentColor": displayColor, "flowerColors":colordocs});
     });
     });
