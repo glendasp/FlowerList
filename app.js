@@ -4,8 +4,6 @@ var engines = require("jade");
 var assert= require('assert');
 var bodyParser = require('body-parser');
 
-
-
 app = express();
 
 app.set("view engine", "jade");
@@ -13,7 +11,9 @@ app.set("views", __dirname + "/views");
 
 app.use(express.static("public"));
 
-app.use(bodyParser());
+app.use(bodyParser());   //bodyParser enables routes to extract request body.
+
+
 
 
 //Attempt to connect to MongoDB.
@@ -55,14 +55,28 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
 
 
   app.post("/addNewFlower", function(req, res) {
-     console.log(req.body);
      db.collection("flowers").insert(req.body, function(err, result){
-      console.log(result);
       res.redirect('/'); //todo send success/fail back to client.
      });
-
   });
 
+
+  app.put("/updateColor", function(req, res) {
+    //Filter is the flower with the given name
+    //console.log(req.query);
+    console.log(req.body);
+    var filter = { "name" : req.body.name }
+    var update = {$set : req.body } ;
+    db.collection("flowers").findOneAndUpdate(filter, update, function(err, result) {
+      if (err) {
+        console.log("Error when updating color " + err);
+        res.send(500);
+      } else {
+        console.log("Updated - result: " + result)
+        res.send({"color" : req.body.color}); //Send the updated color back.
+    }
+    });
+  });
 
   //All other requests, return 404 not found
   app.use(function(req, res){
