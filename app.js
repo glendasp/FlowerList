@@ -2,6 +2,9 @@ var express = require("express");
 var MongoClient = require("mongodb").MongoClient;
 var engines = require("jade");
 var assert= require('assert');
+var bodyParser = require('body-parser');
+
+
 
 app = express();
 
@@ -9,6 +12,9 @@ app.set("view engine", "jade");
 app.set("views", __dirname + "/views");
 
 app.use(express.static("public"));
+
+app.use(bodyParser());
+
 
 //Attempt to connect to MongoDB.
 MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
@@ -39,14 +45,24 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
 
   app.get("/details/:flower", function(req, res){
 
-    var flowerName = req.params.flower
-
-    //DB query for this flower.
+    var flowerName = req.params.flower //Get value of "flower" param
+    //DB query for this flower. Use findOne and note the callback.
     db.collection("flowers").findOne({"name": flowerName}, function(err, doc){
       console.log(doc);
       res.render("flowerDetails", doc)
     })
   });
+
+
+  app.post("/addNewFlower", function(req, res) {
+     console.log(req.body);
+     db.collection("flowers").insert(req.body, function(err, result){
+      console.log(result);
+      res.redirect('/'); //todo send success/fail back to client.
+     });
+
+  });
+
 
   //All other requests, return 404 not found
   app.use(function(req, res){
