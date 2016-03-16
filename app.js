@@ -11,7 +11,7 @@ app.set("views", __dirname + "/views");
 
 app.use(express.static("public"));
 
-app.use(bodyParser());   //bodyParser enables routes to extract request body.
+app.use(bodyParser.urlencoded({ extended : true }));   //bodyParser enables routes to extract request body.
 
 
 
