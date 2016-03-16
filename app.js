@@ -21,11 +21,16 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
   assert.equal(null, err);  //This will crash the app if there is an error.
   console.log("Connected to MongoDB");
 
-  //routes - only one, to the root /
+  //routes - only one so far, to the root /
   app.get('/', function(req, res){
     db.collection('flowers').find({}, {"name": true, "color": true}).toArray(function(err, flowerdocs){
+
+      if (err) { return res.sendStatus(500); }
+
       var colordocs = db.collection('flowers').distinct("color", function(err, colordocs){
-        res.render('allflowers', {'flowers' : flowerdocs, "flowerColors":colordocs});
+
+        if (err) { return res.sendStatus(500); }
+        return res.render('allflowers', {'flowers' : flowerdocs, "flowerColors":colordocs});
       })
     });
   });
@@ -35,10 +40,16 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
     var color = req.query.colorDropDown;
     //Get all of the flowers of the desired color. Only return name and color.
     db.collection('flowers').find({"color": color}, {"name": true, "color": true}).toArray(function(err, docs){
+
+      if (err) { return rres.sendStatus(500); }
+
       var colordocs = db.collection('flowers').distinct("color", function(err, colordocs){
-        //Turn "red" into "Red"
+        if (err) { return res.sendStatus(500); }
+        //Turn "red" into "Red" for displau
         var displayColor = color.slice(0,1).toUpperCase() + color.slice(1, color.length)
-        res.render('allflowers', {'flowers' : docs, "currentColor": displayColor, "flowerColors":colordocs});
+        //return res.render statement recommended inside a callback to prevent further processing of res
+        return res.render('allflowers',
+           { 'flowers' : docs, "currentColor" : displayColor, "flowerColors" : colordocs });
     });
     });
   });
@@ -48,35 +59,41 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
     var flowerName = req.params.flower //Get value of "flower" param
     //DB query for this flower. Use findOne and note the callback.
     db.collection("flowers").findOne({"name": flowerName}, function(err, doc){
+      if (err) { return res.sendStatus(500); }
       console.log(doc);
-      res.render("flowerDetails", doc)
+      return res.render("flowerDetails", doc)
     })
   });
 
 
   app.post("/addNewFlower", function(req, res) {
      db.collection("flowers").insert(req.body, function(err, result){
-      res.redirect('/'); //todo send success/fail back to client.
+       if (err) { return res.sendStatus(500); }
+       return res.redirect('/'); //todo send success/fail back to client.
      });
   });
 
 
   app.put("/updateColor", function(req, res) {
     //Filter is the flower with the given name
-    //console.log(req.query);
     console.log(req.body);
     var filter = { "name" : req.body.name }
-    var update = {$set : req.body } ;
+    var update = { $set : req.body } ;
+    //By default, findOneAndUpdate replaces the record with the update.
+    //So, here, need to use $set parameter to specify we want to update only the fields given.
     db.collection("flowers").findOneAndUpdate(filter, update, function(err, result) {
       if (err) {
         console.log("Error when updating color " + err);
-        res.send(500);
+        return rres.sendStatus(500);
       } else {
         console.log("Updated - result: " + result)
-        res.send({"color" : req.body.color}); //Send the updated color back.
-    }
+        return res.send({"color" : req.body.color});
+        //Send the updated color back. AJAX is expecting a response.
+      }
     });
   });
+
+
 
   //All other requests, return 404 not found
   app.use(function(req, res){
