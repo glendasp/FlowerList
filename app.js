@@ -11,8 +11,8 @@ app.set("views", __dirname + "/views");
 
 app.use(express.static("public"));
 
-app.use(bodyParser.urlencoded({ extended : true }));   //bodyParser enables routes to extract request body.
-
+//bodyParser needed to enables routes to extract request body.
+app.use(bodyParser.urlencoded({ extended : true }));
 
 
 
@@ -21,14 +21,12 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
   assert.equal(null, err);  //This will crash the app if there is an error.
   console.log("Connected to MongoDB");
 
-  //routes - only one so far, to the root /
+  //routes - this is for the home page
   app.get('/', function(req, res){
     db.collection('flowers').find({}, {"name": true, "color": true}).toArray(function(err, flowerdocs){
-
       if (err) { return res.sendStatus(500); }
 
       var colordocs = db.collection('flowers').distinct("color", function(err, colordocs){
-
         if (err) { return res.sendStatus(500); }
         return res.render('allflowers', {'flowers' : flowerdocs, "flowerColors":colordocs});
       })
@@ -45,7 +43,7 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
 
       var colordocs = db.collection('flowers').distinct("color", function(err, colordocs){
         if (err) { return res.sendStatus(500); }
-        //Turn "red" into "Red" for displau
+        //Turn "red" into "Red" for display
         var displayColor = color.slice(0,1).toUpperCase() + color.slice(1, color.length)
         //return res.render statement recommended inside a callback to prevent further processing of res
         return res.render('allflowers',
@@ -84,7 +82,7 @@ MongoClient.connect("mongodb://localhost:27017/garden", function(err, db){
     db.collection("flowers").findOneAndUpdate(filter, update, function(err, result) {
       if (err) {
         console.log("Error when updating color " + err);
-        return rres.sendStatus(500);
+        return res.sendStatus(500);
       } else {
         console.log("Updated - result: " + result)
         return res.send({"color" : req.body.color});
