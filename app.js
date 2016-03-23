@@ -77,7 +77,7 @@ MongoClient.connect('mongodb://localhost:27017/garden', function(err, db){
 
   app.post("/addNewFlower", function(req, res) {
 
-    //Got help from Larry. He showed me a email where you suggested him using callback
+    //Got help from Larry. He showed me a email where Clara suggested to use a callback
     db.collection("flowers").count({"name":req.body.name}, function (err, count){
 
       if (count == 0) {
