@@ -76,9 +76,21 @@ MongoClient.connect('mongodb://localhost:27017/garden', function(err, db){
 
 
   app.post("/addNewFlower", function(req, res) {
-    db.collection("flowers").insert(req.body, function(err, result){
-      if (err) { return res.sendStatus(500); }
-      return res.redirect('/'); //todo send success/fail back to client.
+
+    //Got help from Larry. He showed me a email where you suggested him using callback
+    db.collection("flowers").count({"name":req.body.name}, function (err, count){
+
+      if (count == 0) {
+
+      db.collection("flowers").insert(req.body, function(err, result) {
+        if (err) {return res.sendStatus(500);
+        }
+        return res.redirect('/'); //todo send success/fail back to client.
+      });
+
+      }else{
+          alert("This flower already exist. Try another one");
+        }
     });
   });
 

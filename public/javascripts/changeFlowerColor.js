@@ -4,10 +4,12 @@ $(document).ready(function(){
 
     if ($('#newColor').length === 1) { return; }
 
-    var input = $("<input id='newColor' placeholder='new color'></input>");
-    (input).insertAfter($(this))
+    var input = $("<input id='newColor' placeholder='new color'></input>").toLowerCase();
+    //var lower = input.toLowerCase();
+
+    (input).insertAfter($(this));
     var instructions = $("<i>Press Enter to save, Esc to cancel</i>");
-    instructions.insertAfter(input);
+    instructions.insertAfter(lower);
 
 
     input.keypress(function(event){
@@ -17,8 +19,8 @@ $(document).ready(function(){
         //Database update via AJAX
         var newColor = $(this).val();
         var name = $("#flowerName").text();
-        var data = {"name" : name, "color": newColor}
-        var url = '/updateColor'
+        var data = {"name" : name, "color": newColor};
+        var url = '/updateColor';
         $.ajax(
             {"method" : "put" ,
               "data" : data ,
@@ -41,6 +43,6 @@ $(document).ready(function(){
         instructions.remove();
         edit = false;
       }
-    })
-  })
+    });
+  });
 });
