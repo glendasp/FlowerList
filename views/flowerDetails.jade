@@ -1,6 +1,9 @@
 html
   head
 
+    title Flower List
+    link(rel="stylesheet", href="/stylesheets/stylesheet.css")
+
   body
 
     h1#flowerName #{name}
@@ -15,7 +18,7 @@ html
 
     p Visit this flower's Wikipedia page at the following link,
 
-    a(href="#{wiki}") #{wiki}
+    a(href="#{wiki}" target="_blank") #{wiki}
 
 
     script(src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js")

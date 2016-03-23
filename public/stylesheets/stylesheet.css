@@ -1,0 +1,17 @@
+body {
+    background-color: aquamarine;
+    color: #333;
+    font-size: 1em;
+    line-height: 1.4;
+    margin: 50px;
+    float: inherit;
+}
+
+h1, h2{
+    font-variant: small-caps;
+
+}
+
+a{
+    text-decoration: none;
+}

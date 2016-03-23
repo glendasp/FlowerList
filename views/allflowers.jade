@@ -1,21 +1,28 @@
 html
   head
-    title Flowers
+    title Flower List
+    link(rel="stylesheet", href="/stylesheets/stylesheet.css")
+
   body
+
+    div
     h1 #{currentColor} Flowers
 
-    form(action="showColors", method="get")
+    form(action='/', method='get')
       select(name='colorDropDown')
         each color in flowerColors
           option(value='#{color}') #{color}
-      input(type="submit" name="colorButton" value="Choose color")
+      input(type='submit' name='colorButton' value='Choose color')
 
     ul
       each flower in flowers
         li
-          a(href="/details/#{flower.name}") #{flower.name}
+          a(href='details/#{flower.name}') #{flower.name}
 
-    a(href="/") Flowers Home Page
+    if currentColor
+          form(action'/' method='get')
+            input(type='submit' name='clearButton' value='Clear selection')
+
 
     //Form to add new flower - Name, Color and Wikipedia page. TODO - upload picture.
     #addNewFlower
@@ -23,10 +30,10 @@ html
       h2 Add New Flower
 
       form(action="addNewFlower", method="post")
-        p Name
-          input#NewFlowerColor(name="name" type="text" placeholder="name")
-        p Color
-          input#newFlowerColor(name="color" type="text" placeholder="color")
-        p Wikipedia Page
-         input#newFlowerLink(name="wiki" type="text" placeholder="wikipedia link")
+        p Name:
+          input#newFlowerName(name="name" type="text" placeholder="name" required)
+        p Color:
+          input#newFlowerColor(name="color" type="text" placeholder="color" required)
+        p Wikipedia Page:
+          input#newFlowerLink(name="wiki" type="text" placeholder="wikipedia link")
         button#saveNewFlower Save
