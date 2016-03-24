@@ -80,20 +80,23 @@ MongoClient.connect('mongodb://localhost:27017/garden', function(err, db){
     //Got help from Larry. He showed me a email where Clara suggested to use a callback
     db.collection("flowers").count({"name":req.body.name}, function (err, count){
 
-      if (count == 0) {
-
+      if (count == 0) { // If it not found it will be inserted
+      //keeping the same code to insert flower
       db.collection("flowers").insert(req.body, function(err, result) {
         if (err) {return res.sendStatus(500);
         }
         return res.redirect('/'); //todo send success/fail back to client.
       });
 
-      }else{
-          alert("This flower already exist. Try another one");
+      }else{ // if grater than 0 it means flowers already exist and alert will pop up
+          //alert("This flower already exist. Try another one");
+        console.log("Flower already exist");
+
+        res.render('allflowers',{'error':'This flower already exist. Try another one'});
+
         }
     });
   });
-
 
 
   app.put("/updateColor", function(req, res) {
