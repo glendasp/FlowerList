@@ -92,7 +92,7 @@ MongoClient.connect('mongodb://localhost:27017/garden', function(err, db){
           //alert("This flower already exist. Try another one");
         console.log("Flower already exist");
 
-        res.render('allflowers',{'error':'This flower already exist. Try another one'});
+        return res.render('error',{'error':'This flower already exist. Try another one'});
 
         }
     });
