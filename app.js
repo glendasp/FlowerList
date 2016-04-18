@@ -74,8 +74,11 @@ MongoClient.connect('mongodb://localhost:27017/garden', function(err, db){
   });
 
 
-
   app.post("/addNewFlower", function(req, res) {
+
+    //Gets flower color when new flower is added and convert it to lowercase.
+    var color = req.body.color;
+    color = color.toLocaleLowerCase();
 
     //Got help from Larry. He showed me a email where Clara suggested to use a callback
     db.collection("flowers").count({"name":req.body.name}, function (err, count){
@@ -102,7 +105,7 @@ MongoClient.connect('mongodb://localhost:27017/garden', function(err, db){
   app.put("/updateColor", function(req, res) {
     //Filter is the flower with the given name
     console.log(req.body);
-    var filter = { "name" : req.body.name }
+    var filter = { "name" : req.body.name };
     var update = { $set : req.body } ;
     //By default, findOneAndUpdate replaces the record with the update.
     //So, here, need to use $set parameter to specify we want to update only the fields given.
@@ -111,7 +114,7 @@ MongoClient.connect('mongodb://localhost:27017/garden', function(err, db){
         console.log("Error when updating color " + err);
         return res.sendStatus(500);
       } else {
-        console.log("Updated - result: " + result)
+        console.log("Updated - result: " + result);
         return res.send({"color" : req.body.color});
         //Send the updated color back. AJAX is expecting a response.
       }
